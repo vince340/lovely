@@ -1,44 +1,40 @@
+const { GoatWrapper } = require('fca-liane-utils');
+const fs = require("fs-extra");
+const axios = require("axios");
+const moment = require("moment-timezone");
+const os = require('os');
+const util = require('util');
+const { createCanvas } = require('canvas');
+const GIFEncoder = require('gifencoder');
+
+const manilaTime = moment.tz('Asia/Manila');
+const spinner = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+
 module.exports = {
-	config: {
-		name: "upt",
-		aliases: ["up"],
-		role: 0,
-		shortDescription: {
-			en: "Show server uptime",
-			tl: "Ipakita ang uptime ng server",
-		},
-		longDescription: {
-			en: "Shows the duration for which the server has been running",
-			tl: "Ipapakita ang tagal na gumagana ang server",
-		},
-		category: "goatBot",
-		guide: {
-			en: "{p}uptime",
-			tl: "{p}uptime",
-		},
-	},
+  config: {
+    name: "upt",
+    aliases: ["upt", "Uptimett", "u", "up"],
+    version: "1.8",
+    author: "Kylepogi",
+    countDown: 5,
+    role: 0,
+    description: { en: "Bot ping monitor" },
+    category: "𝗽𝗶𝗻𝗴 𝗥𝗼𝗯𝗼𝘁",
+    guide: { en: "{pn}ping to show bot pings info" }
+  },
 
-	onStart: async function ({ api, message, threadsData }) {
-		const os = require("os");
-		const uptime = os.uptime();
-
-		const days = Math.floor(uptime / (3600 * 24));
-		const hours = Math.floor((uptime % (3600 * 24)) / 3600);
-		const mins = Math.floor((uptime % 3600) / 60);
-		const seconds = Math.floor(uptime % 60);
-
-		const system = `OS: ${os.platform()} ${os.release()}`;
-		const cores = `Cores: ${os.cpus().length}`;
-		const arch = `Architecture: ${os.arch()}`;
-		const totalMemory = `Total Memory: ${Math.round(os.totalmem() / (1024 * 1024 * 1024))} GB`;
-		const freeMemory = `Free Memory: ${Math.round(os.freemem() / (1024 * 1024 * 1024))} GB`;
-		const uptimeString = `Uptime: ${days} days, ${hours} hours, ${mins} minutes, and ${seconds} seconds`;
-
-		const response = `🕒 ${uptimeString}\n📡 ${system}\n🛡 ${cores}\n⚔ No AI Status\n📈 Total Users: ${threadsData.size}\n📉 Total Threads: ${threadsData.size}\n⚖ AI Usage: 0.0\n📊 RAM Usage: ${Math.round(process.memoryUsage().rss / (1024 * 1024))} MB\n💰 Total(RAM): ${Math.round(os.totalmem() / (1024 * 1024 * 1024))} GB\n💸 Current(RAM): ${Math.round(os.freemem() / (1024 * 1024 * 1024))} GB\n🛫 Ping: 15 ms\n🕰 Uptime(Seconds): ${Math.floor(process.uptime())}`;
-
-		message.reply(response);
-	},
-};    const botUptimeString = formattedUptime;
+  onStart: async function ({ message, api, event }) {
+    const uptime = process.uptime();
+    const formattedUptime = formatMilliseconds(uptime * 1000);
+    const totalMemory = os.totalmem();
+    const freeMemory = os.freemem();
+    const usedMemory = totalMemory - freeMemory;
+    const cpu = os.cpus()[0];
+    const speed = cpu.speed;
+    const totalMem = totalMemory / (1024 ** 3);
+    const usedMem = usedMemory / (1024 ** 3);
+    const currentTime = manilaTime.format('MMMM D, YYYY h:mm A');
+    const botUptimeString = formattedUptime;
     const serverUptimeString = formatUptime(os.uptime());
 
     const encoder = new GIFEncoder(400, 300);
@@ -63,7 +59,7 @@ module.exports = {
 
       ctx.fillStyle = textColors[i];
       ctx.font = '16px Arial';
-      ctx.fillText('Kyles Bot Uptime:', 10, 30);
+      ctx.fillText('lovely Bot Uptime:', 10, 30);
       ctx.fillText(botUptimeString, 10, 60);
       ctx.fillText('Server Uptime:', 10, 90);
       ctx.fillText(serverUptimeString, 10, 120);
@@ -97,7 +93,7 @@ module.exports = {
     return message.reply({
       body: `
 ╭────────────────╮
-👑 Lovely Bot Uptime 
+ 🆙 lovely Bot Uptime 
 ╰────────────────╯
 
 ╭────────────❏
